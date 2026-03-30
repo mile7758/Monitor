@@ -2,12 +2,6 @@
 
 Monitor Demo 是一个前端监控 SDK 示例项目，基于 React + Vite 构建。项目实现了从错误采集、性能采集、用户行为追踪到数据批量上报的完整链路，并提供会话录屏（Session Replay）与 React ErrorBoundary 集成能力。
 
-你可以把它理解为一个可直接二次开发的浏览器监控基础框架：
-
-- 面向前端应用的轻量监控 SDK
-- 事件总线驱动的模块化架构
-- 内置 Demo 页面，便于快速验证各类监控场景
-
 ## 项目结构
 
 ```text
@@ -41,12 +35,11 @@ Monitor Demo 是一个前端监控 SDK 示例项目，基于 React + Vite 构建
 
 - 前端框架: React 19.2.0
 - 构建工具: Vite 7.3.1
-- 类型系统: TypeScript 5.9.3（项目中同时包含 TS 与 JS 文件）
+- 类型系统: TypeScript 5.9.3
 - 代码规范: ESLint 9
 - 监控扩展:
-  - web-vitals（可选，用于核心性能指标）
-  - rrweb（可选，用于会话录屏）
-- 本地测试服务: Express + CORS
+  - web-vitals
+  - rrweb
 
 ## 实现功能
 
@@ -98,7 +91,7 @@ Monitor Demo 是一个前端监控 SDK 示例项目，基于 React + Vite 构建
 
 ### 前置要求
 
-- Node.js >= 18（建议使用最新 LTS）
+- Node.js >= 18
 - pnpm
 
 ### 安装依赖
@@ -155,32 +148,6 @@ pnpm build
 pnpm preview
 ```
 
-## SDK 初始化示例
-
-```ts
-import { init } from 'monitor-demo'
-
-const monitor = init({
-  appKey: 'test-app-key',
-  serverUrl: 'http://localhost:3001',
-  debug: true,
-  framework: {
-    react: true,
-  },
-  advanced: {
-    enableSessionReplay: true,
-    sessionReplaySampleRate: 1,
-  },
-  reporter: {
-    reportMethod: 'fetch',
-    debug: true,
-  },
-})
-
-monitor.setUserId('user-001')
-monitor.setUserData({ role: 'tester' })
-```
-
 ## 项目难点
 
 ### 1. 采集链路的模块解耦
@@ -188,24 +155,12 @@ monitor.setUserData({ role: 'tester' })
 - 通过事件总线连接核心层、采集层和上报层
 - 在低耦合前提下保证事件上下文可追踪
 
-### 2. 浏览器 API 劫持与恢复
-
-- 对 fetch/XHR/history/console 的增强需要兼顾兼容性
-- 销毁阶段要正确恢复原始方法，避免污染业务环境
-
-### 3. 可靠上报策略
+### 2. 可靠上报策略
 
 - 在页面卸载、弱网和跨域场景下保证可达率
 - 结合队列、批量、重试与通道降级，平衡实时性和开销
 
-### 4. 会话录屏的数据体积控制
+### 3. 会话录屏的数据体积控制
 
 - 错误触发式录制，减少冗余采集
 - 事件条数上限与自动停止机制控制上报成本
-
-## 后续可扩展方向
-
-- 引入告警平台（飞书/企业微信/邮件）
-- 支持 sourcemap 解析还原线上堆栈
-- 增加白屏检测与首屏体验指标
-- 增加插件体系，支持业务自定义采集器
